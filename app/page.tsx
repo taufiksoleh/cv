@@ -1,5 +1,6 @@
 "use client";
 
+import SmoothScroll from "@/components/SmoothScroll";
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
@@ -11,15 +12,17 @@ import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
-    <main className="relative">
-      <Navigation />
-      <Hero />
-      <About />
-      <Experience />
-      <Skills />
-      <Projects />
-      <Contact />
-      <Footer />
-    </main>
+    <SmoothScroll>
+      <main className="relative">
+        <Navigation />
+        <Hero />
+        <About />
+        <Experience />
+        <Skills />
+        <Projects />
+        <Contact />
+        <Footer />
+      </main>
+    </SmoothScroll>
   );
 }

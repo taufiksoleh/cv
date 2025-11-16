@@ -1,159 +1,170 @@
 "use client";
 
-import { motion } from 'framer-motion';
-import { useInView } from 'framer-motion';
-import { useRef } from 'react';
-import { ExternalLink, Github } from 'lucide-react';
-import { projects } from '@/data/cv-data';
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ExternalLink, Github, Star } from "lucide-react";
+import { projects } from "@/data/cv-data";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Projects() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const sectionRef = useRef<HTMLElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  };
 
-  const itemVariants = {
-    hidden: { y: 50, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.6,
-      },
-    },
-  };
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Title animation with bounce
+      gsap.fromTo(
+        titleRef.current,
+        { y: 100, opacity: 0, scale: 0.5 },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 1,
+          ease: "elastic.out(1, 0.6)",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 80%",
+          },
+        }
+      );
+
+      // Project cards with 3D effect
+      if (gridRef.current) {
+        gsap.fromTo(
+          gridRef.current.children,
+          {
+            y: 150,
+            opacity: 0,
+            rotationX: 45,
+            scale: 0.8,
+          },
+          {
+            y: 0,
+            opacity: 1,
+            rotationX: 0,
+            scale: 1,
+            duration: 1,
+            ease: "back.out(1.7)",
+            stagger: 0.15,
+            scrollTrigger: {
+              trigger: gridRef.current,
+              start: "top 80%",
+            },
+          }
+        );
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  const colorGradients = [
+    "from-pink-400 to-purple-500",
+    "from-blue-400 to-cyan-500",
+    "from-yellow-400 to-orange-500",
+    "from-green-400 to-teal-500",
+    "from-rose-400 to-red-500",
+    "from-indigo-400 to-violet-500",
+  ];
 
   return (
-    <section id="projects" className="relative min-h-screen flex items-center justify-center py-20">
-      <div className="max-w-7xl mx-auto px-4" ref={ref}>
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+    <section
+      ref={sectionRef}
+      id="projects"
+      className="relative min-h-screen flex items-center justify-center py-20"
+    >
+      <div className="max-w-7xl mx-auto px-4">
+        <h2
+          ref={titleRef}
+          className="text-5xl md:text-7xl font-black mb-16 text-center"
         >
-          <motion.h2
-            variants={itemVariants}
-            className="text-4xl md:text-5xl font-bold mb-16 text-center"
-          >
-            Featured <span className="gradient-text">Projects</span>
-          </motion.h2>
+          Featured <span className="gradient-text">Projects</span> 💼
+        </h2>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {projects.map((project, index) => (
-              <motion.div
-                key={project.id}
-                variants={itemVariants}
-                whileHover={{ y: -10 }}
-                className="group relative bg-gradient-to-br from-gray-800/80 to-gray-900/80 rounded-2xl overflow-hidden border border-gray-700/50 backdrop-blur-sm"
-              >
-                {/* Project Image Placeholder */}
-                <div className="relative h-48 bg-gradient-to-br from-primary-600/20 to-purple-600/20 overflow-hidden">
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-br from-primary-500/40 to-purple-500/40"
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <motion.div
-                      animate={{
-                        rotate: 360,
-                      }}
-                      transition={{
-                        duration: 20,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
-                      className="text-6xl font-bold gradient-text opacity-30"
-                    >
-                      {project.title.charAt(0)}
-                    </motion.div>
-                  </div>
-
-                  {project.featured && (
-                    <div className="absolute top-4 right-4 px-3 py-1 bg-primary-600 text-white text-sm font-semibold rounded-full">
-                      Featured
-                    </div>
-                  )}
-                </div>
-
-                {/* Project Content */}
-                <div className="p-6">
-                  <h3 className="text-2xl font-bold mb-3 group-hover:text-primary-400 transition-colors">
-                    {project.title}
-                  </h3>
-                  <p className="text-gray-400 mb-4 line-clamp-3">{project.description}</p>
-
-                  {/* Technologies */}
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {project.technologies.map((tech) => (
-                      <span
-                        key={tech}
-                        className="px-3 py-1 text-xs bg-primary-600/20 text-primary-300 rounded-full border border-primary-500/30"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Links */}
-                  <div className="flex gap-4">
-                    <motion.a
-                      href={project.liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="flex items-center gap-2 text-primary-400 hover:text-primary-300 transition-colors"
-                    >
-                      <ExternalLink size={18} />
-                      <span className="text-sm font-semibold">Live Demo</span>
-                    </motion.a>
-                    <motion.a
-                      href={project.githubUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="flex items-center gap-2 text-gray-400 hover:text-gray-300 transition-colors"
-                    >
-                      <Github size={18} />
-                      <span className="text-sm font-semibold">Code</span>
-                    </motion.a>
-                  </div>
-                </div>
-
-                {/* Hover Effect */}
-                <motion.div
-                  className="absolute inset-0 border-2 border-primary-500/0 group-hover:border-primary-500/50 rounded-2xl transition-all duration-300 pointer-events-none"
-                />
-              </motion.div>
-            ))}
-          </div>
-
-          <motion.div
-            variants={itemVariants}
-            className="text-center mt-12"
-          >
-            <motion.a
-              href="https://github.com/taufiksoleh"
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="inline-block px-8 py-4 bg-gradient-to-r from-primary-600 to-purple-600 rounded-full text-white font-semibold hover:shadow-lg hover:shadow-primary-500/50 transition-all"
+        <div ref={gridRef} className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+          {projects.map((project, index) => (
+            <div
+              key={project.id}
+              className="group relative glass-dark rounded-3xl overflow-hidden card-3d"
             >
-              View More Projects
-            </motion.a>
-          </motion.div>
-        </motion.div>
+              {/* Project Image/Preview */}
+              <div className={`relative h-52 bg-gradient-to-br ${colorGradients[index % colorGradients.length]} overflow-hidden`}>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-8xl font-black text-white opacity-20 rotate-slow">
+                    {project.title.charAt(0)}
+                  </div>
+                </div>
+
+                {project.featured && (
+                  <div className="absolute top-4 right-4 px-4 py-2 bg-yellow-400 text-gray-900 text-sm font-black rounded-full flex items-center gap-1 pulse">
+                    <Star size={16} fill="currentColor" />
+                    Featured
+                  </div>
+                )}
+              </div>
+
+              {/* Project Content */}
+              <div className="p-6">
+                <h3 className="text-2xl font-black mb-3 gradient-text">
+                  {project.title}
+                </h3>
+                <p className="text-gray-700 mb-4 font-medium line-clamp-3">
+                  {project.description}
+                </p>
+
+                {/* Technologies */}
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {project.technologies.map((tech) => (
+                    <span
+                      key={tech}
+                      className="px-3 py-1.5 text-sm bg-white/40 text-gray-800 font-bold rounded-full backdrop-blur-sm scale-hover"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Links */}
+                <div className="flex gap-4">
+                  <a
+                    href={project.liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-bold rounded-full scale-hover"
+                  >
+                    <ExternalLink size={18} />
+                    Live
+                  </a>
+                  <a
+                    href={project.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-2 glass text-gray-800 font-bold rounded-full scale-hover"
+                  >
+                    <Github size={18} />
+                    Code
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="text-center">
+          <a
+            href="https://github.com/taufiksoleh"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-bouncy text-lg px-10 py-5"
+          >
+            View All Projects 🎉
+          </a>
+        </div>
       </div>
     </section>
   );

@@ -1,132 +1,196 @@
 "use client";
 
-import { motion } from 'framer-motion';
-import { useInView } from 'framer-motion';
-import { useRef } from 'react';
-import { skills } from '@/data/cv-data';
-import { Code, Database, Wrench } from 'lucide-react';
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { skills } from "@/data/cv-data";
+import { Code, Database, Wrench, Zap } from "lucide-react";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const categoryIcons = {
-  frontend: Code,
-  backend: Database,
-  tools: Wrench,
+  frontend: { Icon: Code, color: "from-pink-400 to-purple-500" },
+  backend: { Icon: Database, color: "from-blue-400 to-cyan-500" },
+  tools: { Icon: Wrench, color: "from-yellow-400 to-orange-500" },
 };
 
 export default function Skills() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const sectionRef = useRef<HTMLElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const categoriesRef = useRef<HTMLDivElement>(null);
+  const tagsRef = useRef<HTMLDivElement>(null);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Title animation
+      gsap.fromTo(
+        titleRef.current,
+        { y: 100, opacity: 0, rotation: -5 },
+        {
+          y: 0,
+          opacity: 1,
+          rotation: 0,
+          duration: 1,
+          ease: "elastic.out(1, 0.6)",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 80%",
+          },
+        }
+      );
 
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.5,
-      },
-    },
-  };
+      // Category cards animation with stagger
+      if (categoriesRef.current) {
+        gsap.fromTo(
+          categoriesRef.current.children,
+          { y: 150, opacity: 0, rotation: 15 },
+          {
+            y: 0,
+            opacity: 1,
+            rotation: 0,
+            duration: 1,
+            ease: "back.out(2)",
+            stagger: 0.2,
+            scrollTrigger: {
+              trigger: categoriesRef.current,
+              start: "top 80%",
+            },
+          }
+        );
 
-  const renderSkillCategory = (category: string, skillList: any[], Icon: any) => (
-    <motion.div variants={itemVariants} className="space-y-6">
-      <div className="flex items-center gap-3 mb-6">
-        <Icon className="text-primary-400" size={28} />
-        <h3 className="text-2xl font-bold capitalize">{category}</h3>
-      </div>
+        // Animate skill bars
+        const skillBars = categoriesRef.current.querySelectorAll(".skill-bar");
+        skillBars.forEach((bar) => {
+          const level = bar.getAttribute("data-level");
+          gsap.fromTo(
+            bar,
+            { width: "0%" },
+            {
+              width: `${level}%`,
+              duration: 1.5,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: bar,
+                start: "top 90%",
+              },
+            }
+          );
+        });
+      }
 
-      <div className="space-y-4">
-        {skillList.map((skill) => (
-          <motion.div
-            key={skill.name}
-            whileHover={{ x: 10 }}
-            className="group"
-          >
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-gray-300 font-medium">{skill.name}</span>
-              <span className="text-primary-400 font-semibold">{skill.level}%</span>
+      // Tags animation with bounce
+      if (tagsRef.current) {
+        gsap.fromTo(
+          tagsRef.current.children,
+          { scale: 0, rotation: 180 },
+          {
+            scale: 1,
+            rotation: 0,
+            duration: 0.6,
+            ease: "back.out(3)",
+            stagger: 0.05,
+            scrollTrigger: {
+              trigger: tagsRef.current,
+              start: "top 85%",
+            },
+          }
+        );
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  const renderSkillCategory = (
+    categoryKey: "frontend" | "backend" | "tools",
+    skillList: any[]
+  ) => {
+    const { Icon, color } = categoryIcons[categoryKey];
+    return (
+      <div className="glass-dark p-8 rounded-3xl space-y-6 card-3d">
+        <div className="flex items-center gap-4 mb-6">
+          <div className={`w-14 h-14 bg-gradient-to-br ${color} rounded-2xl flex items-center justify-center rotate-slow`}>
+            <Icon className="text-white" size={28} />
+          </div>
+          <h3 className="text-3xl font-black capitalize gradient-text">
+            {categoryKey}
+          </h3>
+        </div>
+
+        <div className="space-y-5">
+          {skillList.map((skill) => (
+            <div key={skill.name} className="group">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-gray-800 font-bold text-lg">
+                  {skill.name}
+                </span>
+                <span className="text-2xl font-black gradient-text">
+                  {skill.level}%
+                </span>
+              </div>
+              <div className="h-4 bg-white/30 rounded-full overflow-hidden backdrop-blur-sm">
+                <div
+                  className={`skill-bar h-full bg-gradient-to-r ${color} rounded-full relative overflow-hidden`}
+                  data-level={skill.level}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent shine" />
+                </div>
+              </div>
             </div>
-            <div className="h-3 bg-gray-800 rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={isInView ? { width: `${skill.level}%` } : { width: 0 }}
-                transition={{ duration: 1, delay: 0.2 }}
-                className="h-full bg-gradient-to-r from-primary-600 to-purple-600 rounded-full relative"
-              >
-                <motion.div
-                  animate={{
-                    x: [-20, 220],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
-                  className="absolute inset-0 w-20 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12"
-                />
-              </motion.div>
-            </div>
-          </motion.div>
-        ))}
+          ))}
+        </div>
       </div>
-    </motion.div>
-  );
+    );
+  };
 
   return (
-    <section id="skills" className="relative min-h-screen flex items-center justify-center py-20">
-      <div className="max-w-6xl mx-auto px-4" ref={ref}>
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+    <section
+      ref={sectionRef}
+      id="skills"
+      className="relative min-h-screen flex items-center justify-center py-20"
+    >
+      <div className="max-w-7xl mx-auto px-4">
+        <h2
+          ref={titleRef}
+          className="text-5xl md:text-7xl font-black mb-16 text-center"
         >
-          <motion.h2
-            variants={itemVariants}
-            className="text-4xl md:text-5xl font-bold mb-16 text-center"
-          >
-            Skills & <span className="gradient-text">Technologies</span>
-          </motion.h2>
+          Skills & <span className="gradient-text">Technologies</span> 🚀
+        </h2>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {renderSkillCategory('frontend', skills.frontend, categoryIcons.frontend)}
-            {renderSkillCategory('backend', skills.backend, categoryIcons.backend)}
-            {renderSkillCategory('tools', skills.tools, categoryIcons.tools)}
+        <div ref={categoriesRef} className="grid md:grid-cols-3 gap-8 mb-16">
+          {renderSkillCategory("frontend", skills.frontend)}
+          {renderSkillCategory("backend", skills.backend)}
+          {renderSkillCategory("tools", skills.tools)}
+        </div>
+
+        {/* Core Competencies Tags */}
+        <div className="glass p-10 rounded-3xl">
+          <div className="flex items-center justify-center gap-3 mb-8">
+            <Zap className="text-yellow-500 animate-pulse" size={32} />
+            <h3 className="text-3xl font-black text-center gradient-text">
+              Core Superpowers
+            </h3>
+            <Zap className="text-yellow-500 animate-pulse" size={32} />
           </div>
-
-          {/* 3D Skill Visualization */}
-          <motion.div
-            variants={itemVariants}
-            className="mt-16 p-8 bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl border border-gray-700/50 backdrop-blur-sm"
+          <div
+            ref={tagsRef}
+            className="flex flex-wrap justify-center gap-4"
           >
-            <h3 className="text-2xl font-bold mb-6 text-center">Core Competencies</h3>
-            <div className="flex flex-wrap justify-center gap-4">
-              {[
-                ...skills.frontend.slice(0, 3),
-                ...skills.backend.slice(0, 3),
-              ].map((skill, index) => (
-                <motion.div
-                  key={skill.name}
-                  initial={{ scale: 0, rotate: -180 }}
-                  animate={isInView ? { scale: 1, rotate: 0 } : { scale: 0, rotate: -180 }}
-                  transition={{ delay: index * 0.1, duration: 0.5 }}
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  className="px-6 py-4 bg-gradient-to-br from-primary-600/20 to-purple-600/20 rounded-xl border border-primary-500/30 glow-on-hover cursor-pointer"
-                >
-                  <p className="text-lg font-semibold gradient-text">{skill.name}</p>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </motion.div>
+            {[
+              ...skills.frontend.slice(0, 3),
+              ...skills.backend.slice(0, 3),
+            ].map((skill) => (
+              <div
+                key={skill.name}
+                className="px-8 py-4 glass-dark rounded-full cursor-pointer scale-hover wiggle"
+              >
+                <p className="text-xl font-black gradient-text">
+                  {skill.name} ✨
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
