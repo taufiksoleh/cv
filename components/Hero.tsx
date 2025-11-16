@@ -4,6 +4,8 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { Github, Linkedin, Mail, Sparkles } from "lucide-react";
 import { personalInfo, socialLinks } from "@/data/cv-data";
+import MagneticButton from "@/components/MagneticButton";
+import ParallaxSection from "@/components/ParallaxSection";
 
 export default function Hero() {
   const heroRef = useRef<HTMLElement>(null);
@@ -161,17 +163,29 @@ export default function Hero() {
       id="home"
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
-      {/* Animated floating decorative shapes */}
+      {/* Animated floating decorative shapes with parallax */}
       <div
         ref={floatingShapesRef}
         className="absolute inset-0 pointer-events-none overflow-hidden"
       >
-        <div className="absolute top-20 left-20 w-40 h-40 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full blur-3xl" />
-        <div className="absolute top-40 right-32 w-56 h-56 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full blur-3xl" />
-        <div className="absolute bottom-32 left-40 w-48 h-48 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full blur-3xl" />
-        <div className="absolute bottom-40 right-20 w-44 h-44 bg-gradient-to-br from-green-400 to-teal-500 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/4 w-32 h-32 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full blur-2xl" />
-        <div className="absolute top-1/3 right-1/4 w-36 h-36 bg-gradient-to-br from-rose-400 to-red-500 rounded-full blur-3xl" />
+        <ParallaxSection speed={0.3} direction="up">
+          <div className="absolute top-20 left-20 w-40 h-40 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full blur-3xl" />
+        </ParallaxSection>
+        <ParallaxSection speed={0.5} direction="down">
+          <div className="absolute top-40 right-32 w-56 h-56 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full blur-3xl" />
+        </ParallaxSection>
+        <ParallaxSection speed={0.4} direction="up">
+          <div className="absolute bottom-32 left-40 w-48 h-48 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full blur-3xl" />
+        </ParallaxSection>
+        <ParallaxSection speed={0.6} direction="down">
+          <div className="absolute bottom-40 right-20 w-44 h-44 bg-gradient-to-br from-green-400 to-teal-500 rounded-full blur-3xl" />
+        </ParallaxSection>
+        <ParallaxSection speed={0.35} direction="left">
+          <div className="absolute top-1/2 left-1/4 w-32 h-32 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full blur-2xl" />
+        </ParallaxSection>
+        <ParallaxSection speed={0.45} direction="right">
+          <div className="absolute top-1/3 right-1/4 w-36 h-36 bg-gradient-to-br from-rose-400 to-red-500 rounded-full blur-3xl" />
+        </ParallaxSection>
       </div>
 
       <div className="container mx-auto px-4 relative z-10 text-center">
@@ -227,15 +241,20 @@ export default function Hero() {
 
         {/* CTA buttons */}
         <div ref={ctaRef} className="flex flex-wrap gap-6 justify-center items-center mb-16">
-          <a href="#projects" className="btn-bouncy text-lg px-10 py-5 shine">
+          <MagneticButton
+            href="#projects"
+            className="btn-bouncy text-lg px-10 py-5 shine"
+            strength={0.4}
+          >
             View My Work ✨
-          </a>
-          <a
+          </MagneticButton>
+          <MagneticButton
             href="#contact"
-            className="glass px-10 py-5 rounded-full font-bold text-gray-800 hover:scale-105 transition-transform text-lg"
+            className="glass px-10 py-5 rounded-full font-bold text-gray-800 transition-transform text-lg"
+            strength={0.4}
           >
             Let's Talk 💬
-          </a>
+          </MagneticButton>
         </div>
 
         {/* Scroll indicator */}

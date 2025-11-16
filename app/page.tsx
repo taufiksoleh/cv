@@ -9,10 +9,14 @@ import Skills from "@/components/Skills";
 import Projects from "@/components/Projects";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
+import MagneticCursor from "@/components/MagneticCursor";
+import BlobCursor from "@/components/BlobCursor";
 
 export default function Home() {
   return (
     <SmoothScroll>
+      <MagneticCursor />
+      <BlobCursor />
       <main className="relative">
         <Navigation />
         <Hero />

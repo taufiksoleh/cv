@@ -3,8 +3,9 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ExternalLink, Github, Star } from "lucide-react";
 import { projects } from "@/data/cv-data";
+import MagneticButton from "@/components/MagneticButton";
+import ProjectCard from "@/components/ProjectCard";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -88,82 +89,22 @@ export default function Projects() {
 
         <div ref={gridRef} className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {projects.map((project, index) => (
-            <div
+            <ProjectCard
               key={project.id}
-              className="group relative glass-dark rounded-3xl overflow-hidden card-3d"
-            >
-              {/* Project Image/Preview */}
-              <div className={`relative h-52 bg-gradient-to-br ${colorGradients[index % colorGradients.length]} overflow-hidden`}>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-8xl font-black text-white opacity-20 rotate-slow">
-                    {project.title.charAt(0)}
-                  </div>
-                </div>
-
-                {project.featured && (
-                  <div className="absolute top-4 right-4 px-4 py-2 bg-yellow-400 text-gray-900 text-sm font-black rounded-full flex items-center gap-1 pulse">
-                    <Star size={16} fill="currentColor" />
-                    Featured
-                  </div>
-                )}
-              </div>
-
-              {/* Project Content */}
-              <div className="p-6">
-                <h3 className="text-2xl font-black mb-3 gradient-text">
-                  {project.title}
-                </h3>
-                <p className="text-gray-700 mb-4 font-medium line-clamp-3">
-                  {project.description}
-                </p>
-
-                {/* Technologies */}
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {project.technologies.map((tech) => (
-                    <span
-                      key={tech}
-                      className="px-3 py-1.5 text-sm bg-white/40 text-gray-800 font-bold rounded-full backdrop-blur-sm scale-hover"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Links */}
-                <div className="flex gap-4">
-                  <a
-                    href={project.liveUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-bold rounded-full scale-hover"
-                  >
-                    <ExternalLink size={18} />
-                    Live
-                  </a>
-                  <a
-                    href={project.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 glass text-gray-800 font-bold rounded-full scale-hover"
-                  >
-                    <Github size={18} />
-                    Code
-                  </a>
-                </div>
-              </div>
-            </div>
+              project={project}
+              colorGradient={colorGradients[index % colorGradients.length]}
+            />
           ))}
         </div>
 
         <div className="text-center">
-          <a
+          <MagneticButton
             href="https://github.com/taufiksoleh"
-            target="_blank"
-            rel="noopener noreferrer"
             className="btn-bouncy text-lg px-10 py-5"
+            strength={0.4}
           >
             View All Projects 🎉
-          </a>
+          </MagneticButton>
         </div>
       </div>
     </section>
