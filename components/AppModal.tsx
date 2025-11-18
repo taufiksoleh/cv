@@ -1,8 +1,8 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
-import { useEffect } from "react";
+import { motion, AnimatePresence, PanInfo } from "framer-motion";
+import { X, Move } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface AppModalProps {
   isOpen: boolean;
@@ -12,6 +12,8 @@ interface AppModalProps {
 }
 
 export default function AppModal({ isOpen, onClose, title, children }: AppModalProps) {
+  const [isDragging, setIsDragging] = useState(false);
+
   // Prevent body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
@@ -33,6 +35,14 @@ export default function AppModal({ isOpen, onClose, title, children }: AppModalP
     return () => window.removeEventListener("keydown", handleEscape);
   }, [onClose]);
 
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+
+  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    setIsDragging(false);
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -47,17 +57,36 @@ export default function AppModal({ isOpen, onClose, title, children }: AppModalP
             onClick={onClose}
           />
 
-          {/* Modal */}
+          {/* Modal - Draggable */}
           <motion.div
+            drag
+            dragMomentum={false}
+            dragElastic={0.1}
+            dragConstraints={{
+              top: -window.innerHeight / 3,
+              left: -window.innerWidth / 3,
+              right: window.innerWidth / 3,
+              bottom: window.innerHeight / 3,
+            }}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", duration: 0.3, bounce: 0.25 }}
-            className="fixed inset-4 md:inset-8 lg:inset-16 z-50 bg-[var(--background)] rounded-oneui-xl shadow-oneui-xl overflow-hidden flex flex-col"
+            className={`fixed inset-4 md:inset-8 lg:inset-16 z-50 bg-[var(--background)] rounded-oneui-xl shadow-oneui-xl overflow-hidden flex flex-col ${
+              isDragging ? "cursor-grabbing" : "cursor-grab"
+            }`}
+            style={{ touchAction: "none" }}
           >
-            {/* Modal Header - Samsung One UI Style */}
+            {/* Modal Header - Samsung One UI Style with Drag Handle */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)] bg-[var(--background-secondary)]">
-              <h2 className="text-2xl font-bold text-[var(--foreground)]">{title}</h2>
+              <div className="flex items-center gap-3">
+                <div className="p-1.5 rounded-oneui-md bg-[var(--background-tertiary)] text-[var(--foreground-secondary)]">
+                  <Move size={18} />
+                </div>
+                <h2 className="text-2xl font-bold text-[var(--foreground)]">{title}</h2>
+              </div>
               <button
                 onClick={onClose}
                 className="p-2 rounded-oneui-md hover:bg-[var(--background-tertiary)] text-[var(--foreground)] transition-colors"
@@ -68,7 +97,11 @@ export default function AppModal({ isOpen, onClose, title, children }: AppModalP
             </div>
 
             {/* Modal Content - Scrollable */}
-            <div className="flex-1 overflow-y-auto">
+            <div
+              className="flex-1 overflow-y-auto"
+              onPointerDown={(e) => e.stopPropagation()}
+              style={{ touchAction: "pan-y" }}
+            >
               <div className="oneui-container py-6">
                 {children}
               </div>
