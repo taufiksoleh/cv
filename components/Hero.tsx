@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { User, Briefcase, Award, FolderGit2, Mail as MailIcon, Github, Linkedin } from "lucide-react";
+import { User, Briefcase, Award, FolderGit2, Mail as MailIcon, Github, Linkedin, Minus, X } from "lucide-react";
 import { personalInfo, socialLinks } from "@/data/cv-data";
 import AppIcon from "./AppIcon";
 import AppModal from "./AppModal";
@@ -11,7 +11,13 @@ import Skills from "./Skills";
 import Projects from "./Projects";
 import Contact from "./Contact";
 
-type AppType = "about" | "experience" | "skills" | "projects" | "contact" | null;
+type AppType = "about" | "experience" | "skills" | "projects" | "contact";
+
+interface OpenWindow {
+  id: AppType;
+  isMinimized: boolean;
+  zIndex: number;
+}
 
 const apps = [
   { id: "about" as AppType, icon: User, label: "About Me", color: "#1E88E5" },
@@ -22,17 +28,53 @@ const apps = [
 ];
 
 export default function Hero() {
-  const [activeApp, setActiveApp] = useState<AppType>(null);
+  const [openWindows, setOpenWindows] = useState<OpenWindow[]>([]);
+  const [nextZIndex, setNextZIndex] = useState(100);
 
-  const closeModal = () => setActiveApp(null);
+  const openApp = (appId: AppType) => {
+    // Check if window is already open
+    const existingWindow = openWindows.find(w => w.id === appId);
 
-  const getModalTitle = () => {
-    const app = apps.find(a => a.id === activeApp);
-    return app?.label || "";
+    if (existingWindow) {
+      // If minimized, restore it; if already open, bring to front
+      if (existingWindow.isMinimized) {
+        setOpenWindows(openWindows.map(w =>
+          w.id === appId ? { ...w, isMinimized: false, zIndex: nextZIndex } : w
+        ));
+        setNextZIndex(nextZIndex + 1);
+      } else {
+        bringToFront(appId);
+      }
+    } else {
+      // Open new window
+      setOpenWindows([...openWindows, { id: appId, isMinimized: false, zIndex: nextZIndex }]);
+      setNextZIndex(nextZIndex + 1);
+    }
   };
 
-  const renderModalContent = () => {
-    switch (activeApp) {
+  const closeWindow = (appId: AppType) => {
+    setOpenWindows(openWindows.filter(w => w.id !== appId));
+  };
+
+  const minimizeWindow = (appId: AppType) => {
+    setOpenWindows(openWindows.map(w =>
+      w.id === appId ? { ...w, isMinimized: true } : w
+    ));
+  };
+
+  const bringToFront = (appId: AppType) => {
+    setOpenWindows(openWindows.map(w =>
+      w.id === appId ? { ...w, zIndex: nextZIndex } : w
+    ));
+    setNextZIndex(nextZIndex + 1);
+  };
+
+  const getAppInfo = (appId: AppType) => {
+    return apps.find(a => a.id === appId);
+  };
+
+  const renderModalContent = (appId: AppType) => {
+    switch (appId) {
       case "about":
         return <About />;
       case "experience":
@@ -108,7 +150,7 @@ export default function Hero() {
                     icon={app.icon}
                     label={app.label}
                     color={app.color}
-                    onClick={() => setActiveApp(app.id)}
+                    onClick={() => openApp(app.id)}
                   />
                 </div>
               ))}
@@ -118,20 +160,68 @@ export default function Hero() {
           {/* Bottom Hint */}
           <div className="py-6 text-center">
             <p className="text-sm text-[var(--foreground-tertiary)]">
-              Tap any icon to explore
+              {openWindows.length > 0
+                ? "Click app icons to open multiple windows"
+                : "Tap any icon to explore"}
             </p>
           </div>
         </div>
       </section>
 
-      {/* Modal for App Content */}
-      <AppModal
-        isOpen={activeApp !== null}
-        onClose={closeModal}
-        title={getModalTitle()}
-      >
-        {renderModalContent()}
-      </AppModal>
+      {/* Render all open windows */}
+      {openWindows.map((window) => {
+        const appInfo = getAppInfo(window.id);
+        return (
+          <AppModal
+            key={window.id}
+            isOpen={!window.isMinimized}
+            onClose={() => closeWindow(window.id)}
+            onMinimize={() => minimizeWindow(window.id)}
+            title={appInfo?.label || ""}
+            zIndex={window.zIndex}
+            onFocus={() => bringToFront(window.id)}
+          >
+            {renderModalContent(window.id)}
+          </AppModal>
+        );
+      })}
+
+      {/* Taskbar for minimized windows */}
+      {openWindows.length > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 z-[200] bg-[var(--background-secondary)]/95 backdrop-blur-md border-t border-[var(--border)] px-4 py-2">
+          <div className="flex gap-2 items-center justify-center flex-wrap max-w-7xl mx-auto">
+            {openWindows.map((window) => {
+              const appInfo = getAppInfo(window.id);
+              const Icon = appInfo?.icon;
+              return (
+                <button
+                  key={window.id}
+                  onClick={() => window.isMinimized ? openApp(window.id) : minimizeWindow(window.id)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-oneui-md transition-all ${
+                    window.isMinimized
+                      ? "bg-[var(--background-tertiary)] hover:bg-[var(--background-tertiary)]/80"
+                      : "bg-[var(--primary)] text-white shadow-oneui-md"
+                  }`}
+                  title={appInfo?.label}
+                >
+                  {Icon && <Icon size={18} />}
+                  <span className="text-sm font-medium hidden md:inline">{appInfo?.label}</span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      closeWindow(window.id);
+                    }}
+                    className="ml-2 hover:bg-black/20 rounded p-1 transition-colors"
+                    title="Close"
+                  >
+                    <X size={14} />
+                  </button>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </>
   );
 }
