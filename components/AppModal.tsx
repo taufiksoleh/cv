@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence, PanInfo } from "framer-motion";
+import { motion, AnimatePresence, PanInfo, useDragControls } from "framer-motion";
 import { X, Move, Minus } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 
@@ -27,8 +27,23 @@ export default function AppModal({
   const [isResizing, setIsResizing] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isInitialized, setIsInitialized] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const resizeStart = useRef({ width: 0, height: 0, x: 0, y: 0 });
+  const dragControls = useDragControls();
+
+  // Initialize position to center when modal opens
+  useEffect(() => {
+    if (isOpen && !isInitialized) {
+      const centerX = (window.innerWidth - dimensions.width) / 2;
+      const centerY = (window.innerHeight - dimensions.height) / 2;
+      setPosition({ x: centerX, y: centerY });
+      setIsInitialized(true);
+    }
+    if (!isOpen) {
+      setIsInitialized(false);
+    }
+  }, [isOpen, isInitialized, dimensions.width, dimensions.height]);
 
   // Don't prevent body scroll when multiple modals can be open
   useEffect(() => {
@@ -49,9 +64,8 @@ export default function AppModal({
     setIsDragging(true);
   };
 
-  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+  const handleDragEnd = () => {
     setIsDragging(false);
-    setPosition({ x: info.point.x, y: info.point.y });
   };
 
   const handleResizeStart = (e: React.MouseEvent, direction: string) => {
@@ -108,18 +122,20 @@ export default function AppModal({
             drag
             dragMomentum={false}
             dragElastic={0}
+            dragListener={false}
+            dragControls={dragControls}
             dragConstraints={{
               top: 0,
-              left: -window.innerWidth + 400,
-              right: window.innerWidth - 400,
-              bottom: window.innerHeight - 100,
+              left: 0,
+              right: window.innerWidth - dimensions.width,
+              bottom: window.innerHeight - dimensions.height,
             }}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             onPointerDown={onFocus}
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, scale: 0.95, x: position.x, y: position.y }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
             transition={{ type: "spring", duration: 0.3, bounce: 0.25 }}
             className={`fixed rounded-xl shadow-2xl overflow-hidden flex flex-col ${
               isDragging ? "cursor-grabbing" : ""
@@ -129,9 +145,10 @@ export default function AppModal({
               zIndex: zIndex,
               width: dimensions.width,
               height: dimensions.height,
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
+              top: 0,
+              left: 0,
+              x: position.x,
+              y: position.y,
               backgroundColor: "rgba(var(--background-rgb, 255, 255, 255), 0.8)",
               backdropFilter: "blur(40px) saturate(180%)",
               WebkitBackdropFilter: "blur(40px) saturate(180%)",
@@ -144,6 +161,7 @@ export default function AppModal({
               style={{
                 backgroundColor: "rgba(var(--background-secondary-rgb, 245, 245, 245), 0.6)",
               }}
+              onPointerDown={(e) => dragControls.start(e)}
             >
               <div className="flex items-center gap-2">
                 {/* macOS Traffic Light Buttons */}
