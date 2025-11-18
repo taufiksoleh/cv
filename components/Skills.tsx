@@ -33,27 +33,15 @@ export default function Skills() {
           </h3>
         </div>
 
-        <div className="space-y-3">
+        <div className="flex flex-wrap gap-2">
           {skillList.map((skill) => (
-            <div key={skill.name}>
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-sm font-medium text-[var(--foreground)]">
-                  {skill.name}
-                </span>
-                <span className="text-sm font-bold text-[var(--primary)]">
-                  {skill.level}%
-                </span>
-              </div>
-              <div className="h-2 bg-[var(--background-secondary)] rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{
-                    width: `${skill.level}%`,
-                    backgroundColor: color,
-                  }}
-                />
-              </div>
-            </div>
+            <span
+              key={skill.name}
+              className="px-3 py-1.5 rounded-oneui-sm text-sm font-medium text-white transition-all duration-200 hover:opacity-80"
+              style={{ backgroundColor: color }}
+            >
+              {skill.name}
+            </span>
           ))}
         </div>
       </div>
