@@ -1,171 +1,91 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ExternalLink, Github, Star } from "lucide-react";
 import { projects } from "@/data/cv-data";
 
-gsap.registerPlugin(ScrollTrigger);
+const projectColors = ["#1E88E5", "#43A047", "#FB8C00", "#8E24AA", "#E53935", "#00ACC1"];
 
 export default function Projects() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
-
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Title animation with bounce
-      gsap.fromTo(
-        titleRef.current,
-        { y: 100, opacity: 0, scale: 0.5 },
-        {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 1,
-          ease: "elastic.out(1, 0.6)",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 80%",
-          },
-        }
-      );
-
-      // Project cards with 3D effect
-      if (gridRef.current) {
-        gsap.fromTo(
-          gridRef.current.children,
-          {
-            y: 150,
-            opacity: 0,
-            rotationX: 45,
-            scale: 0.8,
-          },
-          {
-            y: 0,
-            opacity: 1,
-            rotationX: 0,
-            scale: 1,
-            duration: 1,
-            ease: "back.out(1.7)",
-            stagger: 0.15,
-            scrollTrigger: {
-              trigger: gridRef.current,
-              start: "top 80%",
-            },
-          }
-        );
-      }
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
-
-  const colorGradients = [
-    "from-pink-400 to-purple-500",
-    "from-blue-400 to-cyan-500",
-    "from-yellow-400 to-orange-500",
-    "from-green-400 to-teal-500",
-    "from-rose-400 to-red-500",
-    "from-indigo-400 to-violet-500",
-  ];
-
   return (
-    <section
-      ref={sectionRef}
-      id="projects"
-      className="relative min-h-screen flex items-center justify-center py-20"
-    >
-      <div className="max-w-7xl mx-auto px-4">
-        <h2
-          ref={titleRef}
-          className="text-5xl md:text-7xl font-black mb-16 text-center"
+    <div className="space-y-4">
+      {projects.map((project, index) => (
+        <div
+          key={project.id}
+          className="oneui-card-elevated stagger-children"
+          style={{ animationDelay: `${index * 0.1}s` }}
         >
-          Featured <span className="gradient-text">Projects</span> 💼
-        </h2>
-
-        <div ref={gridRef} className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          {projects.map((project, index) => (
+          {/* Project Header with Color Indicator */}
+          <div className="flex items-start gap-4 mb-4">
             <div
-              key={project.id}
-              className="group relative glass-dark rounded-3xl overflow-hidden card-3d"
+              className="w-16 h-16 rounded-oneui-lg flex items-center justify-center text-white text-2xl font-bold flex-shrink-0"
+              style={{ backgroundColor: projectColors[index % projectColors.length] }}
             >
-              {/* Project Image/Preview */}
-              <div className={`relative h-52 bg-gradient-to-br ${colorGradients[index % colorGradients.length]} overflow-hidden`}>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-8xl font-black text-white opacity-20 rotate-slow">
-                    {project.title.charAt(0)}
-                  </div>
-                </div>
-
-                {project.featured && (
-                  <div className="absolute top-4 right-4 px-4 py-2 bg-yellow-400 text-gray-900 text-sm font-black rounded-full flex items-center gap-1 pulse">
-                    <Star size={16} fill="currentColor" />
-                    Featured
-                  </div>
-                )}
-              </div>
-
-              {/* Project Content */}
-              <div className="p-6">
-                <h3 className="text-2xl font-black mb-3 gradient-text">
+              {project.title.charAt(0)}
+            </div>
+            <div className="flex-1">
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="text-xl font-bold text-[var(--foreground)]">
                   {project.title}
                 </h3>
-                <p className="text-gray-700 mb-4 font-medium line-clamp-3">
-                  {project.description}
-                </p>
-
-                {/* Technologies */}
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {project.technologies.map((tech) => (
-                    <span
-                      key={tech}
-                      className="px-3 py-1.5 text-sm bg-white/40 text-gray-800 font-bold rounded-full backdrop-blur-sm scale-hover"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Links */}
-                <div className="flex gap-4">
-                  <a
-                    href={project.liveUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-bold rounded-full scale-hover"
-                  >
-                    <ExternalLink size={18} />
-                    Live
-                  </a>
-                  <a
-                    href={project.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 glass text-gray-800 font-bold rounded-full scale-hover"
-                  >
-                    <Github size={18} />
-                    Code
-                  </a>
-                </div>
+                {project.featured && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 text-xs font-semibold rounded-oneui-sm">
+                    <Star size={12} fill="currentColor" />
+                    Featured
+                  </span>
+                )}
               </div>
+              <p className="oneui-body mt-2">
+                {project.description}
+              </p>
             </div>
-          ))}
-        </div>
+          </div>
 
-        <div className="text-center">
-          <a
-            href="https://github.com/taufiksoleh"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-bouncy text-lg px-10 py-5"
-          >
-            View All Projects 🎉
-          </a>
+          {/* Technologies */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {project.technologies.map((tech) => (
+              <span
+                key={tech}
+                className="oneui-chip text-xs"
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
+
+          {/* Links */}
+          <div className="flex gap-3">
+            <a
+              href={project.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white text-sm font-semibold rounded-oneui-full hover:bg-[var(--primary-dark)] transition-colors"
+            >
+              <ExternalLink size={16} />
+              Live Demo
+            </a>
+            <a
+              href={project.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 bg-[var(--background-secondary)] text-[var(--foreground)] text-sm font-semibold rounded-oneui-full hover:bg-[var(--background-tertiary)] transition-colors"
+            >
+              <Github size={16} />
+              Source Code
+            </a>
+          </div>
         </div>
+      ))}
+
+      <div className="text-center pt-4">
+        <a
+          href="https://github.com/taufiksoleh"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="oneui-btn-outline oneui-btn"
+        >
+          View All on GitHub
+        </a>
       </div>
-    </section>
+    </div>
   );
 }

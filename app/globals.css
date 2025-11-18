@@ -2,17 +2,65 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Samsung One UI Design Tokens */
 :root {
-  --foreground-rgb: 20, 20, 40;
-  --background-rgb: 255, 250, 245;
-  --primary: #FF6B9D;
-  --secondary: #C44569;
-  --accent: #FFA07A;
-  --purple: #9D84FF;
-  --blue: #4ECDC4;
-  --yellow: #FFD93D;
-  --green: #6BCF7F;
-  --pink: #FF8FB1;
+  /* Light Mode Colors */
+  --background: #FFFFFF;
+  --background-secondary: #F5F5F5;
+  --background-tertiary: #FAFAFA;
+  --foreground: #1A1A1A;
+  --foreground-secondary: #666666;
+  --foreground-tertiary: #999999;
+
+  /* Samsung Blue Accent */
+  --primary: #1E88E5;
+  --primary-light: #42A5F5;
+  --primary-dark: #1565C0;
+
+  /* Semantic Colors */
+  --success: #4CAF50;
+  --warning: #FF9800;
+  --error: #F44336;
+  --info: #2196F3;
+
+  /* Border & Divider */
+  --border: #E0E0E0;
+  --divider: #F0F0F0;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+  /* Border Radius (Samsung One UI style) */
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Spacing */
+  --spacing-unit: 4px;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #000000;
+    --background-secondary: #1A1A1A;
+    --background-tertiary: #2A2A2A;
+    --foreground: #FFFFFF;
+    --foreground-secondary: #B3B3B3;
+    --foreground-tertiary: #808080;
+    --border: #333333;
+    --divider: #262626;
+
+    --shadow-sm: 0 1px 2px 0 rgba(255, 255, 255, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(255, 255, 255, 0.05);
+    --shadow-lg: 0 10px 15px -3px rgba(255, 255, 255, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(255, 255, 255, 0.05);
+  }
 }
 
 * {
@@ -22,403 +70,198 @@
 }
 
 html {
-  scroll-behavior: auto; /* Lenis will handle smooth scrolling */
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-    135deg,
-    #ffeaa7 0%,
-    #fab1a0 25%,
-    #fd79a8 50%,
-    #a29bfe 75%,
-    #74b9ff 100%
-  );
-  background-attachment: fixed;
+  color: var(--foreground);
+  background: var(--background);
   min-height: 100vh;
   overflow-x: hidden;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
+  line-height: 1.6;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Animated Background Gradient */
-@keyframes gradient-animation {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    -45deg,
-    #ffeaa7,
-    #fab1a0,
-    #fd79a8,
-    #a29bfe,
-    #74b9ff,
-    #55efc4
-  );
-  background-size: 400% 400%;
-  animation: gradient-animation 15s ease infinite;
-  z-index: -1;
-  opacity: 0.9;
-}
-
-/* Custom Scrollbar */
+/* Custom Scrollbar - Samsung One UI Style */
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  background: var(--background-secondary);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--primary), var(--purple));
-  border-radius: 10px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: var(--foreground-tertiary);
+  border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, var(--pink), var(--blue));
+  background: var(--foreground-secondary);
 }
 
-/* Scroll Progress Bar */
-.scroll-progress {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--primary), var(--purple), var(--blue), var(--yellow));
-  transform-origin: 0%;
-  z-index: 9999;
-}
-
-/* Fun Cursor Trail */
-.cursor-dot {
-  width: 8px;
-  height: 8px;
-  background: var(--primary);
-  border-radius: 50%;
-  position: fixed;
-  pointer-events: none;
-  z-index: 9999;
-  mix-blend-mode: difference;
-}
-
-/* Gradient text */
-.gradient-text {
-  background: linear-gradient(135deg, var(--primary), var(--purple), var(--blue));
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: gradient-shift 3s ease infinite;
-  font-weight: 700;
-}
-
-@keyframes gradient-shift {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-/* Section padding */
+/* Samsung One UI Section Styling */
 section {
   position: relative;
   min-height: 100vh;
-  padding: 6rem 2rem;
+  padding: 2rem 1rem;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+}
+
+/* One UI principle: Top 1/3 for titles, Bottom 2/3 for content */
+.oneui-section {
+  padding-top: clamp(2rem, 10vh, 8rem);
+  padding-bottom: clamp(2rem, 8vh, 6rem);
+}
+
+.oneui-header {
+  height: 33vh;
+  min-height: 200px;
+  max-height: 300px;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 2rem;
+}
+
+.oneui-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-bottom: 2rem;
 }
 
 @media (max-width: 768px) {
   section {
-    padding: 4rem 1rem;
+    padding: 1.5rem 1rem;
   }
 }
 
-/* Glass morphism effect */
-.glass {
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+/* Samsung One UI Card Styles */
+.oneui-card {
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
 }
 
-.glass-dark {
-  background: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+.oneui-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
-/* Card hover effects */
-.card-3d {
-  transform-style: preserve-3d;
-  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+.oneui-card-elevated {
+  background: var(--background);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+  transition: all 0.2s ease;
 }
 
-.card-3d:hover {
-  transform: translateY(-10px) rotateY(5deg) rotateX(5deg) scale(1.02);
+.oneui-card-elevated:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
 }
 
-/* Bouncy button */
-.btn-bouncy {
-  position: relative;
-  padding: 1rem 2.5rem;
-  font-size: 1.1rem;
+/* Samsung One UI Button Styles */
+.oneui-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  font-size: 1rem;
   font-weight: 600;
   border: none;
-  border-radius: 50px;
-  background: linear-gradient(135deg, var(--primary), var(--purple));
+  border-radius: var(--radius-full);
+  background: var(--primary);
   color: white;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  box-shadow: 0 10px 30px rgba(255, 107, 157, 0.4);
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
 }
 
-.btn-bouncy:hover {
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 15px 40px rgba(255, 107, 157, 0.6);
+.oneui-btn:hover {
+  background: var(--primary-dark);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
-.btn-bouncy:active {
-  transform: translateY(-2px) scale(0.98);
+.oneui-btn:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
 }
 
-/* Floating animation */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  33% {
-    transform: translateY(-20px) rotate(5deg);
-  }
-  66% {
-    transform: translateY(-10px) rotate(-5deg);
-  }
+.oneui-btn-outline {
+  background: transparent;
+  color: var(--primary);
+  border: 2px solid var(--primary);
 }
 
-.float {
-  animation: float 6s ease-in-out infinite;
+.oneui-btn-outline:hover {
+  background: var(--primary);
+  color: white;
 }
 
-.float-slow {
-  animation: float 8s ease-in-out infinite;
-}
-
-.float-fast {
-  animation: float 4s ease-in-out infinite;
-}
-
-/* Pulse animation */
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 0.8;
-  }
-}
-
-.pulse {
-  animation: pulse 2s ease-in-out infinite;
-}
-
-/* Bounce in animation */
-@keyframes bounceIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.3) translateY(50px);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-  70% {
-    transform: scale(0.9);
-  }
-  100% {
-    transform: scale(1) translateY(0);
-  }
-}
-
-.bounce-in {
-  animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-/* Rotate animation */
-@keyframes rotate-continuous {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.rotate-slow {
-  animation: rotate-continuous 20s linear infinite;
-}
-
-.rotate-medium {
-  animation: rotate-continuous 10s linear infinite;
-}
-
-/* Rainbow text */
-@keyframes rainbow {
-  0% { color: #FF6B9D; }
-  16% { color: #FFA07A; }
-  33% { color: #FFD93D; }
-  50% { color: #6BCF7F; }
-  66% { color: #4ECDC4; }
-  83% { color: #9D84FF; }
-  100% { color: #FF6B9D; }
-}
-
-.rainbow-text {
-  animation: rainbow 4s linear infinite;
-  font-weight: 700;
-}
-
-/* Shine effect */
-@keyframes shine {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 100%;
-  }
-}
-
-.shine {
-  position: relative;
-  overflow: hidden;
-}
-
-.shine::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
+/* Samsung One UI Input Styles */
+.oneui-input {
   width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.4),
-    transparent
-  );
-  animation: shine 3s infinite;
+  padding: 1rem 1.25rem;
+  font-size: 1rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--background);
+  color: var(--foreground);
+  transition: all 0.2s ease;
+  outline: none;
 }
 
-/* Wiggle animation */
-@keyframes wiggle {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(5deg); }
-  75% { transform: rotate(-5deg); }
+.oneui-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(30, 136, 229, 0.1);
 }
 
-.wiggle:hover {
-  animation: wiggle 0.5s ease-in-out;
+.oneui-input::placeholder {
+  color: var(--foreground-tertiary);
 }
 
-/* Scale on hover */
-.scale-hover {
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+/* Samsung One UI Badge/Chip Styles */
+.oneui-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--radius-full);
+  background: var(--background-secondary);
+  color: var(--foreground);
+  transition: all 0.2s ease;
 }
 
-.scale-hover:hover {
-  transform: scale(1.1);
+.oneui-chip-primary {
+  background: rgba(30, 136, 229, 0.1);
+  color: var(--primary);
 }
 
-/* Shadow glow */
-.glow {
-  box-shadow: 0 0 20px rgba(255, 107, 157, 0.5),
-              0 0 40px rgba(157, 132, 255, 0.3);
+.oneui-chip:hover {
+  background: var(--background-tertiary);
+  transform: translateY(-1px);
 }
 
-.glow-hover:hover {
-  box-shadow: 0 0 30px rgba(255, 107, 157, 0.7),
-              0 0 60px rgba(157, 132, 255, 0.5),
-              0 0 90px rgba(78, 205, 196, 0.3);
-}
-
-/* Text shadow glow */
-.text-glow {
-  text-shadow: 0 0 20px rgba(255, 107, 157, 0.6),
-               0 0 40px rgba(157, 132, 255, 0.4);
-}
-
-/* Particle background */
-.particles {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* Loading animation */
-@keyframes pulse-glow {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.05);
-  }
-}
-
-.loading {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-/* Stagger children animation */
-.stagger-children > * {
-  opacity: 0;
-  animation: fadeInUp 0.6s ease forwards;
-}
-
-.stagger-children > *:nth-child(1) { animation-delay: 0.1s; }
-.stagger-children > *:nth-child(2) { animation-delay: 0.2s; }
-.stagger-children > *:nth-child(3) { animation-delay: 0.3s; }
-.stagger-children > *:nth-child(4) { animation-delay: 0.4s; }
-.stagger-children > *:nth-child(5) { animation-delay: 0.5s; }
-.stagger-children > *:nth-child(6) { animation-delay: 0.6s; }
-
-@keyframes fadeInUp {
+/* Subtle Fade In Animation */
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -426,23 +269,87 @@ section {
   }
 }
 
-/* Neon glow */
-.neon {
-  text-shadow:
-    0 0 5px #fff,
-    0 0 10px #fff,
-    0 0 20px var(--primary),
-    0 0 40px var(--primary),
-    0 0 80px var(--primary);
+.fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Stagger children animation - subtle */
+.stagger-children > * {
+  opacity: 0;
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger-children > *:nth-child(8) { animation-delay: 0.4s; }
+
+/* Divider */
+.oneui-divider {
+  height: 1px;
+  background: var(--divider);
+  border: none;
+  margin: 2rem 0;
 }
 
 /* Selection color */
 ::selection {
-  background: var(--primary);
-  color: white;
+  background: rgba(30, 136, 229, 0.2);
+  color: var(--foreground);
 }
 
 ::-moz-selection {
-  background: var(--primary);
-  color: white;
+  background: rgba(30, 136, 229, 0.2);
+  color: var(--foreground);
+}
+
+/* Typography Utilities */
+.oneui-title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--foreground);
+  letter-spacing: -0.02em;
+}
+
+.oneui-subtitle {
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--foreground-secondary);
+}
+
+.oneui-body {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--foreground-secondary);
+}
+
+.oneui-caption {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--foreground-tertiary);
+}
+
+/* Primary Color Text */
+.text-primary {
+  color: var(--primary);
+}
+
+/* Container */
+.oneui-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .oneui-container {
+    padding: 0 2rem;
+  }
 }

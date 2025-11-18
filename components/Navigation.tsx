@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 
 const navItems = [
@@ -16,10 +16,28 @@ const navItems = [
 export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      setIsScrolled(window.scrollY > 20);
+
+      // Update active section based on scroll position
+      const sections = navItems.map(item => item.href.replace('#', ''));
+      const scrollPosition = window.scrollY + 100;
+
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const offsetTop = element.offsetTop;
+          const height = element.offsetHeight;
+
+          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + height) {
+            setActiveSection(section);
+            break;
+          }
+        }
+      }
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -27,71 +45,90 @@ export default function Navigation() {
   }, []);
 
   return (
-    <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'glass backdrop-blur-xl shadow-2xl' : 'bg-transparent'
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 ${
+        isScrolled
+          ? 'bg-[var(--background)] border-b border-[var(--border)] shadow-oneui-sm backdrop-blur-sm bg-opacity-95'
+          : 'bg-transparent'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <motion.div
-            whileHover={{ scale: 1.1, rotate: 5 }}
-            className="text-3xl font-black gradient-text cursor-pointer"
-          >
-            TS ✨
-          </motion.div>
+      <div className="oneui-container">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo - Samsung One UI Style */}
+          <a href="#home" className="text-2xl font-bold text-[var(--foreground)] hover:text-[var(--primary)] transition-colors">
+            Taufik Soleh
+          </a>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-2">
-            {navItems.map((item) => (
-              <motion.a
-                key={item.name}
-                href={item.href}
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-5 py-2.5 text-gray-800 hover:text-white font-bold rounded-full hover:bg-gradient-to-r hover:from-pink-400 hover:to-purple-500 transition-all duration-300"
-              >
-                {item.name}
-              </motion.a>
-            ))}
+          <div className="hidden md:flex items-center gap-1">
+            {navItems.map((item) => {
+              const isActive = activeSection === item.href.replace('#', '');
+              return (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  className={`relative px-4 py-2 text-sm font-medium rounded-oneui-md transition-colors ${
+                    isActive
+                      ? 'text-[var(--primary)]'
+                      : 'text-[var(--foreground-secondary)] hover:text-[var(--foreground)]'
+                  }`}
+                >
+                  {item.name}
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeNav"
+                      className="absolute inset-0 bg-[var(--background-secondary)] rounded-oneui-md -z-10"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                </a>
+              );
+            })}
           </div>
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden glass p-3 rounded-full text-gray-800 font-bold"
+            className="md:hidden p-2 rounded-oneui-md text-[var(--foreground)] hover:bg-[var(--background-secondary)] transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle menu"
           >
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
 
         {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden glass-dark backdrop-blur-xl"
-          >
-            <div className="px-2 pt-2 pb-4 space-y-2">
-              {navItems.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className="block px-5 py-3 text-gray-200 hover:text-white font-bold hover:bg-gradient-to-r hover:from-pink-400 hover:to-purple-500 rounded-full transition-all"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {item.name}
-                </a>
-              ))}
-            </div>
-          </motion.div>
-        )}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="md:hidden overflow-hidden"
+            >
+              <div className="py-4 space-y-1">
+                {navItems.map((item) => {
+                  const isActive = activeSection === item.href.replace('#', '');
+                  return (
+                    <a
+                      key={item.name}
+                      href={item.href}
+                      className={`block px-4 py-3 text-sm font-medium rounded-oneui-md transition-colors ${
+                        isActive
+                          ? 'bg-[var(--background-secondary)] text-[var(--primary)]'
+                          : 'text-[var(--foreground-secondary)] hover:bg-[var(--background-secondary)] hover:text-[var(--foreground)]'
+                      }`}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {item.name}
+                    </a>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-    </motion.nav>
+    </nav>
   );
 }
