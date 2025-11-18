@@ -52,22 +52,22 @@ export default function Hero() {
     <>
       <section
         id="home"
-        className="relative min-h-screen flex flex-col bg-[var(--background)] pt-8"
+        className="relative min-h-screen flex flex-col pt-8 z-10"
       >
         <div className="oneui-container flex-1 flex flex-col">
           {/* Header Section - Top Third */}
           <div className="pt-12 pb-8">
             <div className="stagger-children">
-              <p className="text-lg md:text-xl text-[var(--foreground-secondary)] mb-2">
+              <p className="text-lg md:text-xl text-[var(--foreground-secondary)] mb-2 drop-shadow-sm">
                 Welcome to
               </p>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[var(--foreground)] mb-3">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[var(--foreground)] mb-3 drop-shadow-md">
                 {personalInfo.name}
               </h1>
-              <p className="text-xl md:text-2xl text-[var(--primary)] font-semibold mb-4">
+              <p className="text-xl md:text-2xl text-[var(--primary)] font-semibold mb-4 drop-shadow-sm">
                 {personalInfo.title}
               </p>
-              <p className="oneui-body max-w-2xl mb-8">
+              <p className="oneui-body max-w-2xl mb-8 drop-shadow-sm">
                 {personalInfo.description}
               </p>
 
