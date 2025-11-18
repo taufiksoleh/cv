@@ -1,255 +1,137 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { Github, Linkedin, Mail, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { User, Briefcase, Award, FolderGit2, Mail as MailIcon, Github, Linkedin } from "lucide-react";
 import { personalInfo, socialLinks } from "@/data/cv-data";
+import AppIcon from "./AppIcon";
+import AppModal from "./AppModal";
+import About from "./About";
+import Experience from "./Experience";
+import Skills from "./Skills";
+import Projects from "./Projects";
+import Contact from "./Contact";
+
+type AppType = "about" | "experience" | "skills" | "projects" | "contact" | null;
+
+const apps = [
+  { id: "about" as AppType, icon: User, label: "About Me", color: "#1E88E5" },
+  { id: "experience" as AppType, icon: Briefcase, label: "Experience", color: "#43A047" },
+  { id: "skills" as AppType, icon: Award, label: "Skills", color: "#FB8C00" },
+  { id: "projects" as AppType, icon: FolderGit2, label: "Projects", color: "#8E24AA" },
+  { id: "contact" as AppType, icon: MailIcon, label: "Contact", color: "#E53935" },
+];
 
 export default function Hero() {
-  const heroRef = useRef<HTMLElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const subtitleRef = useRef<HTMLParagraphElement>(null);
-  const descRef = useRef<HTMLParagraphElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
-  const socialsRef = useRef<HTMLDivElement>(null);
-  const floatingShapesRef = useRef<HTMLDivElement>(null);
+  const [activeApp, setActiveApp] = useState<AppType>(null);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Main title animation with elastic bounce
-      gsap.fromTo(
-        titleRef.current,
-        {
-          y: 100,
-          opacity: 0,
-          scale: 0.5,
-          rotation: -10,
-        },
-        {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          rotation: 0,
-          duration: 1.5,
-          ease: "elastic.out(1, 0.6)",
-          delay: 0.2,
-        }
-      );
+  const closeModal = () => setActiveApp(null);
 
-      // Subtitle animation
-      gsap.fromTo(
-        subtitleRef.current,
-        { y: 50, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 1,
-          ease: "back.out(1.7)",
-          delay: 0.6,
-        }
-      );
+  const getModalTitle = () => {
+    const app = apps.find(a => a.id === activeApp);
+    return app?.label || "";
+  };
 
-      // Description animation
-      gsap.fromTo(
-        descRef.current,
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          ease: "power2.out",
-          delay: 1,
-        }
-      );
-
-      // Social links animation with stagger
-      if (socialsRef.current) {
-        gsap.fromTo(
-          socialsRef.current.children,
-          { scale: 0, rotation: 180 },
-          {
-            scale: 1,
-            rotation: 0,
-            duration: 0.6,
-            ease: "back.out(2)",
-            stagger: 0.1,
-            delay: 1.3,
-          }
-        );
-      }
-
-      // CTA buttons animation
-      if (ctaRef.current) {
-        gsap.fromTo(
-          ctaRef.current.children,
-          { y: 50, opacity: 0, scale: 0.8 },
-          {
-            y: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 0.8,
-            ease: "back.out(1.7)",
-            stagger: 0.15,
-            delay: 1.6,
-          }
-        );
-      }
-
-      // Floating shapes animation
-      if (floatingShapesRef.current) {
-        const shapes = floatingShapesRef.current.children;
-        Array.from(shapes).forEach((shape, i) => {
-          gsap.fromTo(
-            shape,
-            { scale: 0, opacity: 0 },
-            {
-              scale: 1,
-              opacity: [0.3, 0.4, 0.35][i % 3],
-              duration: 1,
-              ease: "back.out(1.7)",
-              delay: i * 0.1,
-            }
-          );
-
-          gsap.to(shape, {
-            y: `random(-80, 80)`,
-            x: `random(-60, 60)`,
-            rotation: `random(-180, 180)`,
-            scale: `random(0.8, 1.2)`,
-            duration: `random(4, 8)`,
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut",
-          });
-        });
-      }
-
-      // Mouse parallax effect
-      const handleMouseMove = (e: MouseEvent) => {
-        const { clientX, clientY } = e;
-        const xPos = (clientX / window.innerWidth - 0.5) * 40;
-        const yPos = (clientY / window.innerHeight - 0.5) * 40;
-
-        gsap.to(titleRef.current, {
-          x: xPos * 0.3,
-          y: yPos * 0.3,
-          duration: 0.8,
-          ease: "power2.out",
-        });
-
-        gsap.to(floatingShapesRef.current?.children || [], {
-          x: (i) => xPos * (i + 1) * 0.15,
-          y: (i) => yPos * (i + 1) * 0.15,
-          duration: 1,
-          ease: "power2.out",
-        });
-      };
-
-      window.addEventListener("mousemove", handleMouseMove);
-
-      return () => {
-        window.removeEventListener("mousemove", handleMouseMove);
-      };
-    }, heroRef);
-
-    return () => ctx.revert();
-  }, []);
+  const renderModalContent = () => {
+    switch (activeApp) {
+      case "about":
+        return <About />;
+      case "experience":
+        return <Experience />;
+      case "skills":
+        return <Skills />;
+      case "projects":
+        return <Projects />;
+      case "contact":
+        return <Contact />;
+      default:
+        return null;
+    }
+  };
 
   return (
-    <section
-      ref={heroRef}
-      id="home"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
-    >
-      {/* Animated floating decorative shapes */}
-      <div
-        ref={floatingShapesRef}
-        className="absolute inset-0 pointer-events-none overflow-hidden"
+    <>
+      <section
+        id="home"
+        className="relative min-h-screen flex flex-col bg-[var(--background)] pt-8"
       >
-        <div className="absolute top-20 left-20 w-40 h-40 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full blur-3xl" />
-        <div className="absolute top-40 right-32 w-56 h-56 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full blur-3xl" />
-        <div className="absolute bottom-32 left-40 w-48 h-48 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full blur-3xl" />
-        <div className="absolute bottom-40 right-20 w-44 h-44 bg-gradient-to-br from-green-400 to-teal-500 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/4 w-32 h-32 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full blur-2xl" />
-        <div className="absolute top-1/3 right-1/4 w-36 h-36 bg-gradient-to-br from-rose-400 to-red-500 rounded-full blur-3xl" />
-      </div>
+        <div className="oneui-container flex-1 flex flex-col">
+          {/* Header Section - Top Third */}
+          <div className="pt-12 pb-8">
+            <div className="stagger-children">
+              <p className="text-lg md:text-xl text-[var(--foreground-secondary)] mb-2">
+                Welcome to
+              </p>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[var(--foreground)] mb-3">
+                {personalInfo.name}
+              </h1>
+              <p className="text-xl md:text-2xl text-[var(--primary)] font-semibold mb-4">
+                {personalInfo.title}
+              </p>
+              <p className="oneui-body max-w-2xl mb-8">
+                {personalInfo.description}
+              </p>
 
-      <div className="container mx-auto px-4 relative z-10 text-center">
-        <h1
-          ref={titleRef}
-          className="text-6xl md:text-8xl lg:text-9xl font-black mb-6 gradient-text leading-tight"
-        >
-          {personalInfo.name.split(" ")[0]}{" "}
-          <span className="inline-block">
-            {personalInfo.name.split(" ").slice(1).join(" ")} <Sparkles className="inline-block w-12 h-12 md:w-16 md:h-16 text-yellow-400 animate-pulse" />
-          </span>
-        </h1>
-
-        <p
-          ref={subtitleRef}
-          className="text-2xl md:text-4xl lg:text-5xl font-bold mb-8 text-gray-800"
-        >
-          {personalInfo.title} <span className="rainbow-text">✨</span>
-        </p>
-
-        <p
-          ref={descRef}
-          className="text-lg md:text-xl text-gray-700 mb-12 max-w-3xl mx-auto leading-relaxed font-medium"
-        >
-          {personalInfo.description}
-        </p>
-
-        {/* Social links */}
-        <div ref={socialsRef} className="flex gap-6 justify-center mb-12">
-          <a
-            href={socialLinks.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-16 h-16 flex items-center justify-center glass rounded-full scale-hover wiggle"
-          >
-            <Github className="text-2xl text-gray-800" size={28} />
-          </a>
-          <a
-            href={socialLinks.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-16 h-16 flex items-center justify-center glass rounded-full scale-hover wiggle"
-          >
-            <Linkedin className="text-2xl text-blue-600" size={28} />
-          </a>
-          <a
-            href={socialLinks.email}
-            className="w-16 h-16 flex items-center justify-center glass rounded-full scale-hover wiggle"
-          >
-            <Mail className="text-2xl text-pink-600" size={28} />
-          </a>
-        </div>
-
-        {/* CTA buttons */}
-        <div ref={ctaRef} className="flex flex-wrap gap-6 justify-center items-center mb-16">
-          <a href="#projects" className="btn-bouncy text-lg px-10 py-5 shine">
-            View My Work ✨
-          </a>
-          <a
-            href="#contact"
-            className="glass px-10 py-5 rounded-full font-bold text-gray-800 hover:scale-105 transition-transform text-lg"
-          >
-            Let's Talk 💬
-          </a>
-        </div>
-
-        {/* Scroll indicator */}
-        <div className="mt-20">
-          <div className="flex flex-col items-center gap-3 float">
-            <span className="text-sm font-bold text-gray-800 tracking-wider uppercase">
-              Scroll to explore
-            </span>
-            <div className="w-7 h-12 border-3 border-gray-800 rounded-full flex items-start justify-center p-2">
-              <div className="w-2 h-4 bg-gray-800 rounded-full pulse" />
+              {/* Quick Social Links */}
+              <div className="flex gap-3">
+                <a
+                  href={socialLinks.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-12 h-12 flex items-center justify-center bg-[var(--background-secondary)] hover:bg-[var(--primary)] hover:text-white text-[var(--foreground)] rounded-oneui-md transition-all shadow-oneui-sm"
+                  aria-label="GitHub"
+                >
+                  <Github size={20} />
+                </a>
+                <a
+                  href={socialLinks.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-12 h-12 flex items-center justify-center bg-[var(--background-secondary)] hover:bg-[var(--primary)] hover:text-white text-[var(--foreground)] rounded-oneui-md transition-all shadow-oneui-sm"
+                  aria-label="LinkedIn"
+                >
+                  <Linkedin size={20} />
+                </a>
+              </div>
             </div>
           </div>
+
+          {/* App Icons Grid - Bottom Two Thirds */}
+          <div className="flex-1 flex items-start pt-8">
+            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 w-full">
+              {apps.map((app, index) => (
+                <div
+                  key={app.id}
+                  className="fade-in"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <AppIcon
+                    icon={app.icon}
+                    label={app.label}
+                    color={app.color}
+                    onClick={() => setActiveApp(app.id)}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Bottom Hint */}
+          <div className="py-6 text-center">
+            <p className="text-sm text-[var(--foreground-tertiary)]">
+              Tap any icon to explore
+            </p>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* Modal for App Content */}
+      <AppModal
+        isOpen={activeApp !== null}
+        onClose={closeModal}
+        title={getModalTitle()}
+      >
+        {renderModalContent()}
+      </AppModal>
+    </>
   );
 }
