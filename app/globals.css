@@ -6,7 +6,9 @@
 :root {
   /* Light Mode Colors */
   --background: #FFFFFF;
+  --background-rgb: 255, 255, 255;
   --background-secondary: #F5F5F5;
+  --background-secondary-rgb: 245, 245, 245;
   --background-tertiary: #FAFAFA;
   --foreground: #1A1A1A;
   --foreground-secondary: #666666;
@@ -48,7 +50,9 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #000000;
+    --background-rgb: 0, 0, 0;
     --background-secondary: #1A1A1A;
+    --background-secondary-rgb: 26, 26, 26;
     --background-tertiary: #2A2A2A;
     --foreground: #FFFFFF;
     --foreground-secondary: #B3B3B3;
