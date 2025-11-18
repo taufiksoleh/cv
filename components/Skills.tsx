@@ -1,20 +1,24 @@
 "use client";
 
 import { skills } from "@/data/cv-data";
-import { Code, Database, Wrench } from "lucide-react";
+import { Code, Database, Wrench, Smartphone, Layers, HardDrive, Lightbulb } from "lucide-react";
 
 const categoryIcons = {
-  frontend: { Icon: Code, color: "#1E88E5" },
-  backend: { Icon: Database, color: "#43A047" },
-  tools: { Icon: Wrench, color: "#FB8C00" },
+  languages: { Icon: Code, color: "#1E88E5", label: "Languages" },
+  mobile: { Icon: Smartphone, color: "#E91E63", label: "Mobile" },
+  backend: { Icon: Database, color: "#43A047", label: "Backend" },
+  architecture: { Icon: Layers, color: "#9C27B0", label: "Architecture" },
+  tools: { Icon: Wrench, color: "#FB8C00", label: "Tools" },
+  database: { Icon: HardDrive, color: "#00BCD4", label: "Database" },
+  other: { Icon: Lightbulb, color: "#FFC107", label: "Other" },
 };
 
 export default function Skills() {
   const renderSkillCategory = (
-    categoryKey: "frontend" | "backend" | "tools",
+    categoryKey: keyof typeof categoryIcons,
     skillList: any[]
   ) => {
-    const { Icon, color } = categoryIcons[categoryKey];
+    const { Icon, color, label } = categoryIcons[categoryKey];
     return (
       <div className="oneui-card">
         <div className="flex items-center gap-3 mb-4">
@@ -24,8 +28,8 @@ export default function Skills() {
           >
             <Icon className="text-white" size={20} />
           </div>
-          <h3 className="text-lg font-bold capitalize text-[var(--foreground)]">
-            {categoryKey}
+          <h3 className="text-lg font-bold text-[var(--foreground)]">
+            {label}
           </h3>
         </div>
 
@@ -58,10 +62,14 @@ export default function Skills() {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {renderSkillCategory("frontend", skills.frontend)}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {renderSkillCategory("languages", skills.languages)}
+        {renderSkillCategory("mobile", skills.mobile)}
         {renderSkillCategory("backend", skills.backend)}
+        {renderSkillCategory("architecture", skills.architecture)}
         {renderSkillCategory("tools", skills.tools)}
+        {renderSkillCategory("database", skills.database)}
+        {renderSkillCategory("other", skills.other)}
       </div>
 
       {/* Top Skills */}
@@ -70,7 +78,11 @@ export default function Skills() {
           Top Competencies
         </h3>
         <div className="flex flex-wrap gap-2">
-          {[...skills.frontend.slice(0, 3), ...skills.backend.slice(0, 3)].map((skill) => (
+          {[
+            ...skills.languages.slice(0, 2),
+            ...skills.mobile.slice(0, 2),
+            ...skills.backend.slice(0, 2),
+          ].map((skill) => (
             <span
               key={skill.name}
               className="oneui-chip oneui-chip-primary"
