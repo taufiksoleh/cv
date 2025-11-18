@@ -42,6 +42,7 @@ export interface Education {
 export interface Skill {
   name: string;
   level: number;
+  icon?: string; // URL to technology logo
 }
 
 export interface Skills {

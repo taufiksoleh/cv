@@ -37,9 +37,17 @@ export default function Skills() {
           {skillList.map((skill) => (
             <span
               key={skill.name}
-              className="px-3 py-1.5 rounded-oneui-sm text-sm font-medium text-white transition-all duration-200 hover:opacity-80"
+              className="px-3 py-1.5 rounded-oneui-sm text-sm font-medium text-white transition-all duration-200 hover:opacity-80 flex items-center gap-2"
               style={{ backgroundColor: color }}
             >
+              {skill.icon && (
+                <img
+                  src={skill.icon}
+                  alt={`${skill.name} icon`}
+                  className="w-4 h-4 object-contain"
+                  style={{ filter: 'brightness(0) invert(1)' }}
+                />
+              )}
               {skill.name}
             </span>
           ))}
@@ -73,8 +81,15 @@ export default function Skills() {
           ].map((skill) => (
             <span
               key={skill.name}
-              className="oneui-chip oneui-chip-primary"
+              className="oneui-chip oneui-chip-primary flex items-center gap-2"
             >
+              {skill.icon && (
+                <img
+                  src={skill.icon}
+                  alt={`${skill.name} icon`}
+                  className="w-4 h-4 object-contain"
+                />
+              )}
               {skill.name}
             </span>
           ))}
