@@ -1,29 +1,34 @@
 "use client";
 
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
-import { X, Move } from "lucide-react";
+import { X, Move, Minus } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface AppModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onMinimize?: () => void;
   title: string;
   children: React.ReactNode;
+  zIndex?: number;
+  onFocus?: () => void;
 }
 
-export default function AppModal({ isOpen, onClose, title, children }: AppModalProps) {
+export default function AppModal({
+  isOpen,
+  onClose,
+  onMinimize,
+  title,
+  children,
+  zIndex = 50,
+  onFocus
+}: AppModalProps) {
   const [isDragging, setIsDragging] = useState(false);
 
-  // Prevent body scroll when modal is open
+  // Don't prevent body scroll when multiple modals can be open
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-    return () => {
-      document.body.style.overflow = "unset";
-    };
+    // Allow page scrolling with multiple windows
+    document.body.style.overflow = "unset";
   }, [isOpen]);
 
   // Close on escape key
@@ -47,17 +52,7 @@ export default function AppModal({ isOpen, onClose, title, children }: AppModalP
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
-            onClick={onClose}
-          />
-
-          {/* Modal - Draggable */}
+          {/* Modal - Draggable - No backdrop for multi-window support */}
           <motion.div
             drag
             dragMomentum={false}
@@ -70,14 +65,18 @@ export default function AppModal({ isOpen, onClose, title, children }: AppModalP
             }}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
+            onPointerDown={onFocus}
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", duration: 0.3, bounce: 0.25 }}
-            className={`fixed inset-4 md:inset-8 lg:inset-16 z-50 bg-[var(--background)] rounded-oneui-xl shadow-oneui-xl overflow-hidden flex flex-col ${
+            className={`fixed inset-4 md:inset-8 lg:inset-16 bg-[var(--background)] rounded-oneui-xl shadow-oneui-xl overflow-hidden flex flex-col ${
               isDragging ? "cursor-grabbing" : "cursor-grab"
             }`}
-            style={{ touchAction: "none" }}
+            style={{
+              touchAction: "none",
+              zIndex: zIndex
+            }}
           >
             {/* Modal Header - Samsung One UI Style with Drag Handle */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)] bg-[var(--background-secondary)]">
@@ -87,13 +86,24 @@ export default function AppModal({ isOpen, onClose, title, children }: AppModalP
                 </div>
                 <h2 className="text-2xl font-bold text-[var(--foreground)]">{title}</h2>
               </div>
-              <button
-                onClick={onClose}
-                className="p-2 rounded-oneui-md hover:bg-[var(--background-tertiary)] text-[var(--foreground)] transition-colors"
-                aria-label="Close"
-              >
-                <X size={24} />
-              </button>
+              <div className="flex items-center gap-2">
+                {onMinimize && (
+                  <button
+                    onClick={onMinimize}
+                    className="p-2 rounded-oneui-md hover:bg-[var(--background-tertiary)] text-[var(--foreground)] transition-colors"
+                    aria-label="Minimize"
+                  >
+                    <Minus size={24} />
+                  </button>
+                )}
+                <button
+                  onClick={onClose}
+                  className="p-2 rounded-oneui-md hover:bg-[var(--background-tertiary)] text-[var(--foreground)] transition-colors"
+                  aria-label="Close"
+                >
+                  <X size={24} />
+                </button>
+              </div>
             </div>
 
             {/* Modal Content - Scrollable */}

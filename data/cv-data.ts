@@ -24,10 +24,11 @@ import type {
 
 export const siteConfig: SiteConfig = {
   name: "Taufik Soleh",
-  title: "Senior Software Developer & Programmer Analyst",
-  description: "Senior Software Developer and Programmer Analyst with extensive experience in mobile development, backend engineering, and cross-functional team leadership.",
+  title: "Software Engineer",
+  description: "Software Engineer with 7+ years of expertise in mobile development, backend systems, and team leadership, delivering scalable solutions across diverse technology stacks.",
   url: "https://taufiksoleh.github.io/cv",
   keywords: [
+    "Software Engineer",
     "Full Stack Developer",
     "Android Developer",
     "Mobile Developer",
@@ -47,14 +48,14 @@ export const siteConfig: SiteConfig = {
 
 export const personalInfo: PersonalInfo = {
   name: "Taufik Soleh",
-  title: "Senior Software Developer & Programmer Analyst",
+  title: "Software Engineer",
   location: "Jakarta, Indonesia",
-  email: "taufik@example.com", // Update with your actual email
-  phone: "+62 xxx-xxxx-xxxx", // Update with your actual phone
+  email: "taufikhope@gmail.com",
+  phone: "+62 xxx-xxxx-xxxx", // Not displayed on contact page
   linkedin: "https://id.linkedin.com/in/taufiksoleh",
   github: "https://github.com/taufiksoleh",
-  description: `Senior Software Developer and Programmer Analyst with extensive experience in mobile development, backend engineering, and cross-functional team leadership. Specialized in Android, Flutter, and scalable backend systems.`,
-  professionalSummary: `Senior Software Developer and Programmer Analyst with extensive experience in mobile development, backend engineering, and cross-functional team leadership. Proven ability to lead distributed engineering teams, deliver scalable and robust software solutions, and meet tight deadlines. Skilled in providing technical guidance, architecture direction, and creating clear business documentation including use case models and technical design specs. Strong track record in Android development, CI/CD, Spring Boot, Golang, Ruby on Rails, and cloud-based systems.`,
+  description: `Software Engineer with 7+ years of experience building robust mobile and backend solutions. Passionate about crafting efficient, scalable systems while collaborating with teams to deliver meaningful results.`,
+  professionalSummary: `Software Engineer with 7+ years of experience in mobile development, backend engineering, and technical leadership. Proven track record of delivering scalable solutions across Android, Flutter, Spring Boot, Golang, and Ruby on Rails. Experienced in leading cross-functional teams, implementing CI/CD pipelines, and providing architectural guidance. Committed to writing clean, maintainable code and continuously learning new technologies to solve complex problems.`,
 };
 
 // ============================================================================
@@ -376,5 +377,5 @@ export const socialLinks: SocialLinks = {
   linkedin: "https://id.linkedin.com/in/taufiksoleh",
   github: "https://github.com/taufiksoleh",
   twitter: "https://twitter.com/taufiksoleh", // Update if you have Twitter
-  email: "mailto:taufik@example.com", // Update with your actual email
+  email: "mailto:taufikhope@gmail.com",
 };
