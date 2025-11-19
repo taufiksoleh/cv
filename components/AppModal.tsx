@@ -25,6 +25,7 @@ export default function AppModal({
 }: AppModalProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isInitialized, setIsInitialized] = useState(false);
@@ -32,12 +33,54 @@ export default function AppModal({
   const resizeStart = useRef({ width: 0, height: 0, x: 0, y: 0 });
   const dragControls = useDragControls();
 
+  // Detect mobile and handle responsive dimensions
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      return mobile;
+    };
+
+    const handleResize = () => {
+      const mobile = checkMobile();
+      if (mobile) {
+        // On mobile, use nearly full screen with small padding
+        const mobileWidth = window.innerWidth - 16;
+        const mobileHeight = window.innerHeight - 100;
+        setDimensions({ width: mobileWidth, height: mobileHeight });
+        setPosition({ x: 8, y: 50 });
+      }
+    };
+
+    // Initial check
+    handleResize();
+
+    // Listen for resize/orientation changes
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
+    };
+  }, []);
+
   // Initialize position to center when modal opens
   useEffect(() => {
     if (isOpen && !isInitialized) {
-      const centerX = (window.innerWidth - dimensions.width) / 2;
-      const centerY = (window.innerHeight - dimensions.height) / 2;
-      setPosition({ x: centerX, y: centerY });
+      const mobile = window.innerWidth < 768;
+      if (mobile) {
+        // Mobile: nearly full screen with small padding
+        const mobileWidth = window.innerWidth - 16;
+        const mobileHeight = window.innerHeight - 100;
+        setDimensions({ width: mobileWidth, height: mobileHeight });
+        setPosition({ x: 8, y: 50 });
+      } else {
+        // Desktop: center the window
+        const centerX = (window.innerWidth - dimensions.width) / 2;
+        const centerY = (window.innerHeight - dimensions.height) / 2;
+        setPosition({ x: centerX, y: centerY });
+      }
       setIsInitialized(true);
     }
     if (!isOpen) {
@@ -119,7 +162,7 @@ export default function AppModal({
           {/* Modal - Draggable and Resizable - macOS Style */}
           <motion.div
             ref={modalRef}
-            drag
+            drag={!isMobile}
             dragMomentum={false}
             dragElastic={0}
             dragListener={false}
@@ -127,8 +170,8 @@ export default function AppModal({
             dragConstraints={{
               top: 0,
               left: 0,
-              right: window.innerWidth - dimensions.width,
-              bottom: window.innerHeight - dimensions.height,
+              right: Math.max(0, window.innerWidth - dimensions.width),
+              bottom: Math.max(0, window.innerHeight - dimensions.height),
             }}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
@@ -157,11 +200,13 @@ export default function AppModal({
           >
             {/* macOS-Style Header with Traffic Lights */}
             <div
-              className="flex items-center justify-between px-4 py-3 border-b border-white/10 cursor-grab active:cursor-grabbing"
+              className={`flex items-center justify-between px-4 py-3 border-b border-white/10 ${
+                !isMobile ? "cursor-grab active:cursor-grabbing" : ""
+              }`}
               style={{
                 backgroundColor: "rgba(var(--background-secondary-rgb, 245, 245, 245), 0.6)",
               }}
-              onPointerDown={(e) => dragControls.start(e)}
+              onPointerDown={(e) => !isMobile && dragControls.start(e)}
             >
               <div className="flex items-center gap-2">
                 {/* macOS Traffic Light Buttons */}
@@ -199,49 +244,53 @@ export default function AppModal({
               </div>
             </div>
 
-            {/* Resize Handles */}
-            {/* Corner Handles */}
-            <div
-              className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize"
-              onMouseDown={(e) => handleResizeStart(e, "se")}
-              style={{ touchAction: "none" }}
-            />
-            <div
-              className="absolute bottom-0 left-0 w-4 h-4 cursor-sw-resize"
-              onMouseDown={(e) => handleResizeStart(e, "sw")}
-              style={{ touchAction: "none" }}
-            />
-            <div
-              className="absolute top-0 right-0 w-4 h-4 cursor-ne-resize"
-              onMouseDown={(e) => handleResizeStart(e, "ne")}
-              style={{ touchAction: "none" }}
-            />
-            <div
-              className="absolute top-0 left-0 w-4 h-4 cursor-nw-resize"
-              onMouseDown={(e) => handleResizeStart(e, "nw")}
-              style={{ touchAction: "none" }}
-            />
-            {/* Edge Handles */}
-            <div
-              className="absolute bottom-0 left-4 right-4 h-1 cursor-s-resize"
-              onMouseDown={(e) => handleResizeStart(e, "s")}
-              style={{ touchAction: "none" }}
-            />
-            <div
-              className="absolute top-0 left-4 right-4 h-1 cursor-n-resize"
-              onMouseDown={(e) => handleResizeStart(e, "n")}
-              style={{ touchAction: "none" }}
-            />
-            <div
-              className="absolute left-0 top-4 bottom-4 w-1 cursor-w-resize"
-              onMouseDown={(e) => handleResizeStart(e, "w")}
-              style={{ touchAction: "none" }}
-            />
-            <div
-              className="absolute right-0 top-4 bottom-4 w-1 cursor-e-resize"
-              onMouseDown={(e) => handleResizeStart(e, "e")}
-              style={{ touchAction: "none" }}
-            />
+            {/* Resize Handles - Hidden on mobile */}
+            {!isMobile && (
+              <>
+                {/* Corner Handles */}
+                <div
+                  className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize"
+                  onMouseDown={(e) => handleResizeStart(e, "se")}
+                  style={{ touchAction: "none" }}
+                />
+                <div
+                  className="absolute bottom-0 left-0 w-4 h-4 cursor-sw-resize"
+                  onMouseDown={(e) => handleResizeStart(e, "sw")}
+                  style={{ touchAction: "none" }}
+                />
+                <div
+                  className="absolute top-0 right-0 w-4 h-4 cursor-ne-resize"
+                  onMouseDown={(e) => handleResizeStart(e, "ne")}
+                  style={{ touchAction: "none" }}
+                />
+                <div
+                  className="absolute top-0 left-0 w-4 h-4 cursor-nw-resize"
+                  onMouseDown={(e) => handleResizeStart(e, "nw")}
+                  style={{ touchAction: "none" }}
+                />
+                {/* Edge Handles */}
+                <div
+                  className="absolute bottom-0 left-4 right-4 h-1 cursor-s-resize"
+                  onMouseDown={(e) => handleResizeStart(e, "s")}
+                  style={{ touchAction: "none" }}
+                />
+                <div
+                  className="absolute top-0 left-4 right-4 h-1 cursor-n-resize"
+                  onMouseDown={(e) => handleResizeStart(e, "n")}
+                  style={{ touchAction: "none" }}
+                />
+                <div
+                  className="absolute left-0 top-4 bottom-4 w-1 cursor-w-resize"
+                  onMouseDown={(e) => handleResizeStart(e, "w")}
+                  style={{ touchAction: "none" }}
+                />
+                <div
+                  className="absolute right-0 top-4 bottom-4 w-1 cursor-e-resize"
+                  onMouseDown={(e) => handleResizeStart(e, "e")}
+                  style={{ touchAction: "none" }}
+                />
+              </>
+            )}
           </motion.div>
         </>
       )}
