@@ -30,7 +30,7 @@ export default function AppModal({
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isInitialized, setIsInitialized] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
-  const resizeStart = useRef({ width: 0, height: 0, x: 0, y: 0 });
+  const resizeStart = useRef({ width: 0, height: 0, x: 0, y: 0, posX: 0, posY: 0 });
   const dragControls = useDragControls();
 
   // Detect mobile and handle responsive dimensions
@@ -120,6 +120,8 @@ export default function AppModal({
       height: dimensions.height,
       x: e.clientX,
       y: e.clientY,
+      posX: position.x,
+      posY: position.y,
     };
 
     const handleResizeMove = (moveEvent: MouseEvent) => {
@@ -128,6 +130,8 @@ export default function AppModal({
 
       let newWidth = resizeStart.current.width;
       let newHeight = resizeStart.current.height;
+      let newPosX = resizeStart.current.posX;
+      let newPosY = resizeStart.current.posY;
 
       if (direction.includes("e")) {
         newWidth = Math.max(400, resizeStart.current.width + deltaX);
@@ -136,13 +140,28 @@ export default function AppModal({
         newHeight = Math.max(300, resizeStart.current.height + deltaY);
       }
       if (direction.includes("w")) {
-        newWidth = Math.max(400, resizeStart.current.width - deltaX);
+        const potentialWidth = resizeStart.current.width - deltaX;
+        if (potentialWidth >= 400) {
+          newWidth = potentialWidth;
+          newPosX = resizeStart.current.posX + deltaX;
+        } else {
+          newWidth = 400;
+          newPosX = resizeStart.current.posX + (resizeStart.current.width - 400);
+        }
       }
       if (direction.includes("n")) {
-        newHeight = Math.max(300, resizeStart.current.height - deltaY);
+        const potentialHeight = resizeStart.current.height - deltaY;
+        if (potentialHeight >= 300) {
+          newHeight = potentialHeight;
+          newPosY = resizeStart.current.posY + deltaY;
+        } else {
+          newHeight = 300;
+          newPosY = resizeStart.current.posY + (resizeStart.current.height - 300);
+        }
       }
 
       setDimensions({ width: newWidth, height: newHeight });
+      setPosition({ x: newPosX, y: newPosY });
     };
 
     const handleResizeEnd = () => {
