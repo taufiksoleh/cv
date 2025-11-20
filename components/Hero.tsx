@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { User, Briefcase, Award, FolderGit2, Mail as MailIcon, Github, Linkedin, Minus, X } from "lucide-react";
+import { User, Briefcase, Award, FolderGit2, Mail as MailIcon, Github, Linkedin, Minus, X, Gamepad2 } from "lucide-react";
 import { personalInfo, socialLinks } from "@/data/cv-data";
 import AppIcon from "./AppIcon";
 import AppModal from "./AppModal";
@@ -10,8 +10,9 @@ import Experience from "./Experience";
 import Skills from "./Skills";
 import Projects from "./Projects";
 import Contact from "./Contact";
+import Game from "./Game";
 
-type AppType = "about" | "experience" | "skills" | "projects" | "contact";
+type AppType = "about" | "experience" | "skills" | "projects" | "contact" | "game";
 
 interface OpenWindow {
   id: AppType;
@@ -25,6 +26,7 @@ const apps = [
   { id: "skills" as AppType, icon: Award, label: "Skills", color: "#FB8C00" },
   { id: "projects" as AppType, icon: FolderGit2, label: "Projects", color: "#8E24AA" },
   { id: "contact" as AppType, icon: MailIcon, label: "Contact", color: "#E53935" },
+  { id: "game" as AppType, icon: Gamepad2, label: "Game", color: "#FF6F00" },
 ];
 
 export default function Hero() {
@@ -85,6 +87,8 @@ export default function Hero() {
         return <Projects />;
       case "contact":
         return <Contact />;
+      case "game":
+        return <Game />;
       default:
         return null;
     }
